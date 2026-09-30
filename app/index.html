@@ -1,0 +1,2632 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Music Psychology AI</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #11131a;
+    color: white;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.left {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.right {
+    width: 430px;
+    background: #191c25;
+    padding: 30px;
+    border-left: 1px solid #30333d;
+    overflow-y: auto;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+.subtitle {
+    color: #999;
+    margin-bottom: 30px;
+}
+
+.graph {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    max-width: 90vw;
+    max-height: 90vw;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.outer {
+    fill: #171a22;
+    stroke: #555b68;
+    stroke-width: 2;
+}
+
+.grid {
+    fill: none;
+    stroke: #30343f;
+    stroke-width: 1;
+}
+
+.axis {
+    stroke: #30343f;
+    stroke-width: 1;
+}
+
+.emotion-shape {
+    fill: rgba(120, 180, 255, 0.18);
+    stroke: #7eb6ff;
+    stroke-width: 3;
+}
+
+.label {
+    fill: #ddd;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.dot {
+    fill: white;
+    stroke: #7eb6ff;
+    stroke-width: 4;
+    cursor: grab;
+}
+
+.card {
+    background: #222631;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.value {
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.big {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.mood-row {
+    margin-bottom: 12px;
+}
+
+.mood-name {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.bar {
+    height: 7px;
+    background: #333743;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: #7eb6ff;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    background: #303541;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #3b4150;
+}
+
+.small {
+    color: #888;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.divider {
+    height: 1px;
+    background: #30343f;
+    margin: 14px 0;
+}
+
+</style>
+<style id="mpai-ui-redesign">
+/* =========================================================
+   MUSIC PSYCHOLOGY AI — UI REDESIGN
+   Visual layer only. Existing functionality is preserved.
+   ========================================================= */
+
+:root {
+    --bg: #080a10;
+    --bg-soft: #0d1018;
+    --panel: rgba(18, 22, 33, 0.88);
+    --panel-strong: #111621;
+    --panel-light: #171d2b;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-bright: rgba(255, 255, 255, 0.15);
+    --text: #f3f5fa;
+    --text-soft: #aeb6c7;
+    --text-dim: #70798c;
+    --accent: #8b7cff;
+    --accent-soft: rgba(139, 124, 255, 0.16);
+    --cyan: #55d6ff;
+    --green: #6ee7b7;
+    --radius: 18px;
+}
+
+/* Base */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(139,124,255,0.10), transparent 30%),
+        radial-gradient(circle at 85% 85%, rgba(85,214,255,0.06), transparent 28%),
+        var(--bg);
+    color: var(--text);
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+body {
+    letter-spacing: 0.01em;
+}
+
+/* Main containers */
+
+main,
+.app,
+.container,
+.wrapper,
+.dashboard,
+.content,
+.page {
+    box-sizing: border-box;
+}
+
+section,
+aside,
+.card,
+.panel {
+    border-color: var(--border);
+}
+
+/* Headings */
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+
+h3 {
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+}
+
+p {
+    color: var(--text-soft);
+}
+
+/* Buttons */
+
+button {
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 9px 14px;
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.07),
+        rgba(255,255,255,0.035)
+    );
+    color: var(--text);
+    font: inherit;
+    font-weight: 550;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(139,124,255,0.45);
+    background: linear-gradient(
+        180deg,
+        rgba(139,124,255,0.16),
+        rgba(255,255,255,0.045)
+    );
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Inputs */
+
+input,
+textarea,
+select {
+    box-sizing: border-box;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(5,7,12,0.65);
+    color: var(--text);
+    font: inherit;
+    outline: none;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: rgba(139,124,255,0.65);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    background: rgba(8,10,17,0.9);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-dim);
+}
+
+/* Panels / cards */
+
+.card,
+.panel,
+aside,
+section {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.card,
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+/* Scrollbars */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139,124,255,0.35) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(139,124,255,0.28);
+    border-radius: 20px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(139,124,255,0.48);
+}
+
+/* SVG emotional map */
+
+svg {
+    overflow: visible;
+}
+
+svg text {
+    fill: #dce2ee;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        sans-serif;
+    font-weight: 550;
+}
+
+svg polygon {
+    transition: filter 0.25s ease;
+}
+
+svg polygon:hover {
+    filter:
+        drop-shadow(0 0 12px rgba(139,124,255,0.18));
+}
+
+/* Draggable emotional dot */
+
+circle {
+    transition:
+        filter 0.18s ease,
+        r 0.18s ease;
+}
+
+circle:hover {
+    filter:
+        drop-shadow(0 0 7px rgba(139,124,255,0.75));
+}
+
+/* Mood bars */
+
+progress {
+    height: 7px;
+    border: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.07);
+}
+
+progress::-webkit-progress-bar {
+    background: rgba(255,255,255,0.07);
+    border-radius: 20px;
+}
+
+progress::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--accent), var(--cyan));
+    border-radius: 20px;
+}
+
+progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--accent), var(--cyan));
+    border-radius: 20px;
+}
+
+/* AI chat */
+
+#ai-chat,
+.ai-chat,
+.chat-panel {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(20,24,36,0.96),
+            rgba(11,14,22,0.96)
+        );
+    border: 1px solid var(--border-bright);
+    border-radius: 18px;
+    box-shadow:
+        0 24px 70px rgba(0,0,0,0.32),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+#ai-chat input,
+.ai-chat input {
+    min-height: 44px;
+}
+
+#ai-chat button,
+.ai-chat button {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(139,124,255,0.9),
+            rgba(85,214,255,0.65)
+        );
+    border-color: rgba(255,255,255,0.12);
+    color: white;
+}
+
+#ai-chat button:hover,
+.ai-chat button:hover {
+    box-shadow:
+        0 8px 28px rgba(85,214,255,0.14);
+}
+
+/* Chat bubbles */
+
+.message,
+.chat-message,
+.user-message,
+.ai-message {
+    border-radius: 14px;
+    line-height: 1.55;
+}
+
+.user-message {
+    background: rgba(139,124,255,0.14);
+    border: 1px solid rgba(139,124,255,0.18);
+}
+
+.ai-message {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Small labels / status */
+
+.badge,
+.status,
+.label {
+    border-radius: 999px;
+    color: var(--text-soft);
+}
+
+.status {
+    background: rgba(110,231,183,0.08);
+    border: 1px solid rgba(110,231,183,0.16);
+}
+
+/* Subtle separators */
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+}
+
+/* Responsive */
+
+@media (max-width: 1050px) {
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+}
+
+/* Entrance animation */
+
+@keyframes mpaiFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body > *,
+main > *,
+.app > *,
+.dashboard > * {
+    animation: mpaiFadeUp 0.35s ease both;
+}
+</style>
+<style id="mood-color-system">
+
+:root {
+    --mood-primary: #7eb6ff;
+    --mood-secondary: #9b8cff;
+    --mood-glow: rgba(126,182,255,.20);
+    --mood-soft: rgba(126,182,255,.08);
+}
+
+/* Calm */
+body.mood-calm {
+    --mood-primary: #55d6d2;
+    --mood-secondary: #5b9cff;
+    --mood-glow: rgba(85,214,210,.22);
+    --mood-soft: rgba(85,214,210,.08);
+}
+
+/* Joy */
+body.mood-joy {
+    --mood-primary: #8bd66b;
+    --mood-secondary: #e3c85b;
+    --mood-glow: rgba(139,214,107,.22);
+    --mood-soft: rgba(139,214,107,.08);
+}
+
+/* Wonder */
+body.mood-wonder {
+    --mood-primary: #a98cff;
+    --mood-secondary: #61c8ff;
+    --mood-glow: rgba(169,140,255,.22);
+    --mood-soft: rgba(169,140,255,.08);
+}
+
+/* Euphoria */
+body.mood-euphoria {
+    --mood-primary: #ff63c8;
+    --mood-secondary: #a875ff;
+    --mood-glow: rgba(255,99,200,.22);
+    --mood-soft: rgba(255,99,200,.08);
+}
+
+/* Anger */
+body.mood-anger {
+    --mood-primary: #ff5b55;
+    --mood-secondary: #ff9a45;
+    --mood-glow: rgba(255,91,85,.22);
+    --mood-soft: rgba(255,91,85,.08);
+}
+
+/* Fear */
+body.mood-fear {
+    --mood-primary: #557dff;
+    --mood-secondary: #795cff;
+    --mood-glow: rgba(85,125,255,.22);
+    --mood-soft: rgba(85,125,255,.08);
+}
+
+/* Melancholy */
+body.mood-melancholy {
+    --mood-primary: #c47a8e;
+    --mood-secondary: #7868b8;
+    --mood-glow: rgba(196,122,142,.20);
+    --mood-soft: rgba(196,122,142,.08);
+}
+
+/* Nostalgia */
+body.mood-nostalgia {
+    --mood-primary: #e0ae55;
+    --mood-secondary: #c97865;
+    --mood-glow: rgba(224,174,85,.22);
+    --mood-soft: rgba(224,174,85,.08);
+}
+
+/* Main emotional shape */
+.emotion-shape {
+    fill: color-mix(in srgb, var(--mood-primary) 20%, transparent) !important;
+    stroke: var(--mood-primary) !important;
+    filter: drop-shadow(0 0 12px var(--mood-glow));
+    transition:
+        fill .5s ease,
+        stroke .5s ease,
+        filter .5s ease;
+}
+
+/* Draggable dot */
+.dot {
+    stroke: var(--mood-primary) !important;
+    filter: drop-shadow(0 0 10px var(--mood-primary));
+    transition:
+        stroke .5s ease,
+        filter .5s ease;
+}
+
+/* Progress bars */
+.bar-fill {
+    background: linear-gradient(
+        90deg,
+        var(--mood-secondary),
+        var(--mood-primary)
+    ) !important;
+
+    transition:
+        width .35s ease,
+        background .5s ease;
+}
+
+/* Buttons */
+button {
+    transition:
+        background .4s ease,
+        box-shadow .4s ease;
+}
+
+button:hover {
+    background: color-mix(in srgb, var(--mood-primary) 20%, transparent) !important;
+    box-shadow: 0 0 18px var(--mood-glow);
+}
+
+/* Main values */
+.big {
+    color: var(--mood-primary) !important;
+}
+
+/* AI panel */
+#aiChat {
+    border-color: color-mix(in srgb, var(--mood-primary) 20%, transparent);
+    box-shadow:
+        0 0 30px var(--mood-glow);
+    transition:
+        border-color .5s ease,
+        box-shadow .5s ease;
+}
+
+.ai-message.ai {
+    background: color-mix(in srgb, var(--mood-primary) 20%, transparent) !important;
+}
+
+#aiInput:focus {
+    border-color: var(--mood-primary) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--mood-primary) 20%, transparent);
+}
+
+#aiSend {
+    background:
+        linear-gradient(
+            135deg,
+            var(--mood-secondary),
+            var(--mood-primary)
+        ) !important;
+}
+
+/* Smooth overall transitions */
+.emotion-shape,
+.dot,
+.bar-fill,
+.big,
+button,
+#aiChat,
+#aiInput,
+#aiSend {
+    transition-duration: .5s;
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settings-button {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+    z-index: 1000;
+    font-size: 21px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.settings-panel {
+    position: fixed;
+    top: 72px;
+    right: 18px;
+    width: 300px;
+    padding: 20px;
+    z-index: 999;
+    display: none;
+
+    background: rgba(18, 22, 33, 0.96);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.45);
+
+    backdrop-filter: blur(20px);
+}
+
+.settings-panel.open {
+    display: block;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.settings-header h2 {
+    margin: 0;
+}
+
+.settings-close {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    font-size: 22px;
+}
+
+.settings-section {
+    margin-bottom: 18px;
+}
+
+.settings-section label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-soft);
+    font-size: 13px;
+}
+
+.settings-section select {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 12px;
+}
+
+.settings-description {
+    margin-top: 8px;
+    color: var(--text-dim);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =========================
+   BACKGROUND THEMES
+========================= */
+
+body.background-dark {
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(139,124,255,0.10),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 85%,
+            rgba(85,214,255,0.06),
+            transparent 28%
+        ),
+        #080a10;
+}
+
+body.background-light {
+    background:
+        linear-gradient(
+            135deg,
+            #f4f6fa,
+            #dfe5ef
+        );
+
+    color: #171a22;
+}
+
+body.background-light .right {
+    background: rgba(240,243,248,0.92);
+}
+
+body.background-light .card {
+    background: rgba(255,255,255,0.75);
+    color: #171a22;
+}
+
+body.background-light .label {
+    fill: #303541;
+}
+
+body.background-light .subtitle,
+body.background-light .small {
+    color: #596274;
+}
+
+
+/* Rainbow background */
+
+body.background-rainbow {
+    background: linear-gradient(120deg, #6b1238, #6b3b12, #665f12, #145c32, #10566b, #30366b, #4d176b, #6b1238);
+
+    background-size: 400% 400%;
+
+    animation:
+        rainbowBackground 14s ease infinite;
+}
+
+@keyframes rainbowBackground {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+
+}
+
+body.background-rainbow .left {
+    background: rgba(0,0,0,0.12);
+}
+
+body.background-rainbow .right {
+    background: rgba(10,12,20,0.78);
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- SETTINGS -->
+
+<button id="settingsButton" class="settings-button" title="Settings">
+    ⚙
+</button>
+
+<div id="settingsPanel" class="settings-panel">
+
+    <div class="settings-header">
+        <h2>Settings</h2>
+        <button id="settingsClose" class="settings-close">×</button>
+    </div>
+
+    <div class="settings-section">
+
+        <label for="languageSelect">
+            Language
+        </label>
+
+        <select id="languageSelect">
+
+            <option value="en">
+                English
+            </option>
+
+            <option value="fr">
+                Français
+            </option>
+
+            <option value="es">
+                Español
+            </option>
+
+                        <option value="zh">简体中文</option>
+</select>
+
+    </div>
+
+
+    <div class="settings-section">
+
+        <label for="backgroundSelect">
+            Background
+        </label>
+
+        <select id="backgroundSelect">
+
+            <option value="current">
+                Current
+            </option>
+
+            <option value="dark">
+                Dark
+            </option>
+
+            <option value="light">
+                Light
+            </option>
+
+            <option value="rainbow">
+                🌈 Rainbow
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="settings-description">
+        Your settings are saved automatically.
+    </div>
+
+</div>
+
+
+
+<div class="app">
+
+
+<div class="left">
+
+<h1 data-lang="title">Emotional Music Map</h1>
+
+<div class="subtitle">
+Drag the dot anywhere inside the map.
+</div>
+
+
+<div class="graph">
+
+<svg viewBox="0 0 600 600">
+
+
+<!-- Octagon -->
+
+<polygon
+class="outer"
+points="
+300,40
+484,116
+560,300
+484,484
+300,560
+116,484
+40,300
+116,116
+"
+/>
+
+
+<!-- Grid -->
+
+<polygon
+class="grid"
+points="
+300,105
+438,162
+495,300
+438,438
+300,495
+162,438
+105,300
+162,162
+"
+/>
+
+<polygon
+class="grid"
+points="
+300,170
+392,208
+430,300
+392,392
+300,430
+208,392
+170,300
+208,208
+"
+/>
+
+
+<!-- Cross -->
+
+<line class="axis" x1="40" y1="300" x2="560" y2="300"/>
+<line class="axis" x1="300" y1="40" x2="300" y2="560"/>
+
+
+<!-- Emotional fingerprint -->
+
+<polygon
+id="emotionShape"
+class="emotion-shape"
+points=""
+/>
+
+
+<!-- Labels -->
+
+<text class="label" x="300" y="20" text-anchor="middle">
+<tspan data-lang="wonder">Wonder</tspan>
+</text>
+
+<text class="label" x="500" y="105">
+<tspan data-lang="euphoria">Euphoria</tspan>
+</text>
+
+<text class="label" x="575" y="305">
+<tspan data-lang="anger">Anger</tspan>
+</text>
+
+<text class="label" x="495" y="510">
+<tspan data-lang="fear">Fear</tspan>
+</text>
+
+<text class="label" x="300" y="585" text-anchor="middle">
+<tspan data-lang="melancholy">Melancholy</tspan>
+</text>
+
+<text class="label" x="15" y="510">
+<tspan data-lang="nostalgia">Nostalgia</tspan>
+</text>
+
+<text class="label" x="5" y="305">
+<tspan data-lang="calm">Calm</tspan>
+</text>
+
+<text class="label" x="90" y="105">
+<tspan data-lang="joy">Joy</tspan>
+</text>
+
+
+<!-- Dot -->
+
+<circle
+id="dot"
+class="dot"
+cx="300"
+cy="300"
+r="12"
+/>
+
+</svg>
+
+</div>
+
+
+<button id="reset" data-lang="reset">
+Reset
+</button>
+
+</div>
+
+
+
+<div class="right">
+
+
+<h2 data-lang="analysis">Music Analysis</h2>
+
+
+<!-- Mood -->
+
+<div class="card">
+
+<h3 data-lang="mixture">Emotional mixture</h3>
+
+<div id="moodList"></div>
+
+</div>
+
+
+<!-- Primary emotion -->
+
+<div class="card">
+
+<h3 data-lang="primary">Primary emotional state</h3>
+
+<div id="primaryMood" class="value big"></div>
+
+</div>
+
+
+<!-- Key -->
+
+<div class="card">
+
+<h3 data-lang="key">Suggested key</h3>
+
+<div id="key" class="value big"></div>
+
+</div>
+
+
+<!-- Scale -->
+
+<div class="card">
+
+<h3 data-lang="scale">Suggested scale / mode</h3>
+
+<div id="scale" class="value"></div>
+
+</div>
+
+
+<!-- Tempo -->
+
+<div class="card">
+
+<h3 data-lang="tempo">Suggested tempo</h3>
+
+<div id="tempo" class="value big"></div>
+
+</div>
+
+
+<!-- Chords -->
+
+<div class="card">
+
+<h3 data-lang="chords">Suggested chord progression</h3>
+
+<div id="chords" class="value big"></div>
+
+<div class="divider"></div>
+
+<div id="chordExplanation" class="small"></div>
+
+</div>
+
+
+<!-- Melody -->
+
+<div class="card">
+
+<h3 data-lang="melody">Melody</h3>
+
+<div id="melody" class="value"></div>
+
+</div>
+
+
+<!-- Rhythm -->
+
+<div class="card">
+
+<h3 data-lang="rhythm">Rhythm</h3>
+
+<div id="rhythm" class="value"></div>
+
+</div>
+
+
+<!-- Dynamics -->
+
+<div class="card">
+
+<h3 data-lang="dynamics">Dynamics</h3>
+
+<div id="dynamics" class="value"></div>
+
+</div>
+
+
+<!-- Sound -->
+
+<div class="card">
+
+<h3 data-lang="instrumentation">Instrumentation / texture</h3>
+
+<div id="texture" class="value"></div>
+
+</div>
+
+
+<!-- Overall -->
+
+<div class="card">
+
+<h3 data-lang="sound">What it should sound like</h3>
+
+<div id="sound" class="value"></div>
+
+</div>
+
+
+<div class="small">
+
+These musical suggestions are generated from the position
+of the dot. They are composition ideas, not psychological
+measurements or rules.
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   BASIC GRAPH DATA
+========================= */
+
+
+const center = {
+    x: 300,
+    y: 300
+};
+
+
+const moods = [
+
+    {
+        name: "Wonder",
+        x: 300,
+        y: 40
+    },
+
+    {
+        name: "Euphoria",
+        x: 484,
+        y: 116
+    },
+
+    {
+        name: "Anger",
+        x: 560,
+        y: 300
+    },
+
+    {
+        name: "Fear",
+        x: 484,
+        y: 484
+    },
+
+    {
+        name: "Melancholy",
+        x: 300,
+        y: 560
+    },
+
+    {
+        name: "Nostalgia",
+        x: 116,
+        y: 484
+    },
+
+    {
+        name: "Calm",
+        x: 40,
+        y: 300
+    },
+
+    {
+        name: "Joy",
+        x: 116,
+        y: 116
+    }
+
+];
+
+
+const dot = document.getElementById("dot");
+
+const emotionShape =
+    document.getElementById("emotionShape");
+
+
+let dotX = 300;
+let dotY = 300;
+
+let dragging = false;
+
+
+
+/* =========================
+   MUSIC DATA
+========================= */
+
+
+/*
+Each mood has a musical character.
+
+These are intentionally simple for now.
+Later we can build a much larger
+music-theory system.
+*/
+
+
+const musicProfiles = {
+
+    Joy: {
+
+        key: "C major",
+
+        scale: "Major / Ionian",
+
+        tempo: "105–125 BPM",
+
+        chords: "I – V – vi – IV",
+
+        chordExplanation:
+            "A familiar major-key progression with forward motion and a strong sense of resolution.",
+
+        melody:
+            "Use a mostly ascending or arch-shaped melody. Repeat short motifs and emphasize stable chord tones.",
+
+        rhythm:
+            "Steady pulse with moderate rhythmic activity. Use syncopation sparingly for movement.",
+
+        dynamics:
+            "Medium to strong dynamics with gradual increases toward important sections.",
+
+        texture:
+            "Piano, clean guitar, light percussion, warm bass, and a bright supporting layer.",
+
+        sound:
+            "Open, warm, energetic, and emotionally accessible."
+    },
+
+
+    Wonder: {
+
+        key: "D major",
+
+        scale: "Lydian",
+
+        tempo: "75–105 BPM",
+
+        chords: "I – II – V – I",
+
+        chordExplanation:
+            "The raised fourth of Lydian and the major II chord can create a brighter, less settled harmonic color.",
+
+        melody:
+            "Use wider intervals, suspended notes, and phrases that avoid immediate resolution.",
+
+        rhythm:
+            "Moderate rhythm with space between important notes.",
+
+        dynamics:
+            "Gentle beginning with gradual expansion.",
+
+        texture:
+            "Piano, soft synths, strings, bells, and long reverberant sounds.",
+
+        sound:
+            "Spacious, curious, bright, and slightly unresolved."
+    },
+
+
+    Euphoria: {
+
+        key: "A major",
+
+        scale: "Major / Mix of major modes",
+
+        tempo: "120–140 BPM",
+
+        chords: "I – V – vi – IV",
+
+        chordExplanation:
+            "Strong repeating harmony combined with a fast pulse can support a feeling of sustained musical momentum.",
+
+        melody:
+            "Higher register, repeated motifs, rising phrases, and longer sustained notes at climactic points.",
+
+        rhythm:
+            "Strong pulse with active drums, syncopation, and repeating rhythmic patterns.",
+
+        dynamics:
+            "Build continuously toward a large peak.",
+
+        texture:
+            "Layered drums, bass, synths, bright keys, pads, and wide backing vocals.",
+
+        sound:
+            "Large, bright, energetic, expansive, and climactic."
+    },
+
+
+    Anger: {
+
+        key: "E minor",
+
+        scale: "Natural minor / Dorian",
+
+        tempo: "110–145 BPM",
+
+        chords: "i – VI – VII – i",
+
+        chordExplanation:
+            "Minor harmony with strong repetition can create a darker, forceful harmonic foundation.",
+
+        melody:
+            "Short motifs, repeated notes, strong accents, and smaller melodic cells.",
+
+        rhythm:
+            "Strong accents, syncopation, repetition, and dense rhythmic patterns.",
+
+        dynamics:
+            "Strong attacks with sharp contrasts between quieter and louder sections.",
+
+        texture:
+            "Distorted guitar, aggressive drums, bass, low synths, and dense layers.",
+
+        sound:
+            "Forceful, tense, rhythmic, dense, and aggressive."
+    },
+
+
+    Fear: {
+
+        key: "F minor",
+
+        scale: "Natural minor / Phrygian",
+
+        tempo: "70–120 BPM",
+
+        chords: "i – ♭II – VI – V",
+
+        chordExplanation:
+            "The flattened second can create a strong chromatic tension against the tonic.",
+
+        melody:
+            "Use unstable intervals, descending lines, pauses, and phrases that delay resolution.",
+
+        rhythm:
+            "Irregular accents, silence, sudden rhythmic changes, and restrained pulse.",
+
+        dynamics:
+            "Quiet sections interrupted by sudden increases in intensity.",
+
+        texture:
+            "Low drones, strings, dark synths, noise textures, and large reverb spaces.",
+
+        sound:
+            "Unstable, dark, spacious, tense, and unpredictable."
+    },
+
+
+    Melancholy: {
+
+        key: "D minor",
+
+        scale: "Natural minor",
+
+        tempo: "55–80 BPM",
+
+        chords: "i – VI – III – VII",
+
+        chordExplanation:
+            "A slow minor-key loop can support a sustained sense of tonal sadness or introspection.",
+
+        melody:
+            "Long phrases, descending contours, expressive bends, and emphasis on minor-scale tones.",
+
+        rhythm:
+            "Slow pulse with space between phrases and relatively low rhythmic density.",
+
+        dynamics:
+            "Soft dynamics with gradual swells rather than abrupt changes.",
+
+        texture:
+            "Piano, cello, soft pads, restrained drums, and intimate room ambience.",
+
+        sound:
+            "Intimate, slow, reflective, dark, and emotionally restrained."
+    },
+
+
+    Nostalgia: {
+
+        key: "G major",
+
+        scale: "Major with modal mixture",
+
+        tempo: "75–105 BPM",
+
+        chords: "I – vi – IV – V",
+
+        chordExplanation:
+            "A familiar tonal progression can provide a recognizable harmonic frame, while occasional borrowed chords can add emotional color.",
+
+        melody:
+            "Memorable motifs, repeated phrases, gentle ornamentation, and moderate melodic range.",
+
+        rhythm:
+            "Steady and familiar patterns with occasional syncopation.",
+
+        dynamics:
+            "Warm and moderate, with gentle rises and falls.",
+
+        texture:
+            "Acoustic piano, tape-like textures, clean guitar, strings, and warm bass.",
+
+        sound:
+            "Familiar, warm, bittersweet, intimate, and reflective."
+    },
+
+
+    Calm: {
+
+        key: "F major",
+
+        scale: "Major / Lydian",
+
+        tempo: "55–80 BPM",
+
+        chords: "I – IV – vi – V",
+
+        chordExplanation:
+            "Stable tonal relationships and slower harmonic movement can create a settled musical foundation.",
+
+        melody:
+            "Smooth stepwise motion, longer notes, limited range, and gentle repetition.",
+
+        rhythm:
+            "Simple pulse with low rhythmic density.",
+
+        dynamics:
+            "Mostly soft with very gradual changes.",
+
+        texture:
+            "Soft piano, pads, acoustic instruments, subtle percussion, and spacious ambience.",
+
+        sound:
+            "Smooth, spacious, gentle, stable, and relaxed."
+    }
+
+};
+
+
+
+/* =========================
+   MIXTURE
+========================= */
+
+
+function calculateMixture() {
+
+    let weights = [];
+
+    let total = 0;
+
+
+    moods.forEach(mood => {
+
+        const dx = dotX - mood.x;
+
+        const dy = dotY - mood.y;
+
+        const distance =
+            Math.sqrt(dx * dx + dy * dy);
+
+
+        const weight =
+            1 / (distance + 1);
+
+
+        weights.push(weight);
+
+        total += weight;
+
+    });
+
+
+    return moods.map((mood, index) => {
+
+        return {
+
+            name: mood.name,
+
+            percentage:
+                weights[index] / total * 100
+
+        };
+
+    });
+
+}
+
+
+
+/* =========================
+   COMBINE MUSIC PROFILES
+========================= */
+
+
+/*
+The strongest mood controls the main
+musical suggestion.
+
+The second strongest mood adds
+a secondary influence.
+
+This makes combinations different.
+*/
+
+
+function getMusicSuggestion(mixture) {
+
+    const sorted =
+        [...mixture].sort(
+            (a, b) => b.percentage - a.percentage
+        );
+
+
+    const primary =
+        musicProfiles[sorted[0].name];
+
+
+    const secondary =
+        musicProfiles[sorted[1].name];
+
+
+    return {
+
+        primaryName: sorted[0].name,
+
+        primaryPercentage:
+            sorted[0].percentage,
+
+        secondaryName: sorted[1].name,
+
+        secondaryPercentage:
+            sorted[1].percentage,
+
+        primary: primary,
+
+        secondary: secondary
+
+    };
+
+}
+
+
+
+/* =========================
+   UPDATE SCREEN
+========================= */
+
+
+function update() {
+
+
+    dot.setAttribute("cx", dotX);
+
+    dot.setAttribute("cy", dotY);
+
+
+    const mixture =
+        calculateMixture();
+
+
+    const sorted =
+        [...mixture].sort(
+            (a, b) => b.percentage - a.percentage
+        );
+
+
+    const suggestion =
+        getMusicSuggestion(mixture);
+
+    const moodColors = {
+        Calm: ["#55d6d2", "#5b9cff"],
+        Joy: ["#8bd66b", "#e3c85b"],
+        Wonder: ["#a98cff", "#61c8ff"],
+        Euphoria: ["#ff63c8", "#a875ff"],
+        Anger: ["#ff5b55", "#ff9a45"],
+        Fear: ["#557dff", "#795cff"],
+        Melancholy: ["#c47a8e", "#7868b8"],
+        Nostalgia: ["#e0ae55", "#c97865"]
+    };
+
+    function hexToRgb(hex) {
+        hex = hex.replace("#", "");
+
+        return {
+            r: parseInt(hex.substring(0, 2), 16),
+            g: parseInt(hex.substring(2, 4), 16),
+            b: parseInt(hex.substring(4, 6), 16)
+        };
+    }
+
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+
+        const r = Math.round(a.r + (b.r - a.r) * amount);
+        const g = Math.round(a.g + (b.g - a.g) * amount);
+        const bValue = Math.round(a.b + (b.b - a.b) * amount);
+
+        return `rgb(${r}, ${g}, ${bValue})`;
+    }
+
+    const primaryColors =
+        moodColors[suggestion.primaryName];
+
+    const secondaryColors =
+        moodColors[suggestion.secondaryName];
+
+    if (primaryColors && secondaryColors) {
+
+        const primaryStrength =
+            suggestion.primaryPercentage /
+            (suggestion.primaryPercentage +
+             suggestion.secondaryPercentage);
+
+        const blendAmount =
+            1 - primaryStrength;
+
+        const blendedPrimary =
+            mixColors(
+                primaryColors[0],
+                secondaryColors[0],
+                blendAmount
+            );
+
+        const blendedSecondary =
+            mixColors(
+                primaryColors[1],
+                secondaryColors[1],
+                blendAmount
+            );
+
+        document.documentElement.style.setProperty(
+            "--mood-primary",
+            blendedPrimary
+        );
+
+        document.documentElement.style.setProperty(
+            "--mood-secondary",
+            blendedSecondary
+        );
+
+        document.documentElement.style.setProperty(
+            "--mood-glow",
+            blendedPrimary
+        );
+
+        document.documentElement.style.setProperty(
+            "--mood-soft",
+            blendedPrimary
+        );
+    }
+
+
+    /* -------------------------
+       MOOD LIST
+    ------------------------- */
+
+
+    const moodList =
+        document.getElementById("moodList");
+
+
+    moodList.innerHTML = "";
+
+
+    sorted.forEach(mood => {
+
+        const row =
+            document.createElement("div");
+
+
+        row.className = "mood-row";
+
+
+        row.innerHTML = `
+
+            <div class="mood-name">
+
+                <span>
+                    ${mood.name}
+                </span>
+
+                <span>
+                    ${mood.percentage.toFixed(1)}%
+                </span>
+
+            </div>
+
+
+            <div class="bar">
+
+                <div
+                    class="bar-fill"
+                    style="width:${mood.percentage}%"
+                ></div>
+
+            </div>
+
+        `;
+
+
+        moodList.appendChild(row);
+
+    });
+
+
+
+    /* -------------------------
+       PRIMARY EMOTION
+    ------------------------- */
+
+
+    document.getElementById("primaryMood")
+        .textContent =
+
+        suggestion.primaryName +
+        " — " +
+        suggestion.primaryPercentage.toFixed(1) +
+        "%";
+
+
+
+    /* -------------------------
+       MUSIC
+    ------------------------- */
+
+
+    document.getElementById("key")
+        .textContent =
+        suggestion.primary.key;
+
+
+    document.getElementById("scale")
+        .textContent =
+        suggestion.primary.scale;
+
+
+    document.getElementById("tempo")
+        .textContent =
+        suggestion.primary.tempo;
+
+
+
+    document.getElementById("chords")
+        .textContent =
+        suggestion.primary.chords;
+
+
+    document.getElementById("chordExplanation")
+        .textContent =
+
+        suggestion.primary.chordExplanation;
+
+
+
+    document.getElementById("melody")
+        .textContent =
+
+        suggestion.primary.melody;
+
+
+
+    document.getElementById("rhythm")
+        .textContent =
+
+        suggestion.primary.rhythm;
+
+
+
+    document.getElementById("dynamics")
+        .textContent =
+
+        suggestion.primary.dynamics;
+
+
+
+    document.getElementById("texture")
+        .textContent =
+
+        suggestion.primary.texture;
+
+
+
+    /*
+    Add information about the second mood
+    so the user knows what is influencing
+    the primary recommendation.
+    */
+
+
+    document.getElementById("sound")
+        .textContent =
+
+        suggestion.primary.sound +
+
+        " The secondary influence is " +
+
+        suggestion.secondaryName +
+
+        " (" +
+
+        suggestion.secondaryPercentage.toFixed(1) +
+
+        "%), which can be used to slightly change the character.";
+
+
+
+    /* -------------------------
+       EMOTIONAL FINGERPRINT
+    ------------------------- */
+
+
+    const shapePoints =
+        moods.map((mood, index) => {
+
+            const percentage =
+                mixture[index].percentage;
+
+
+            const strength =
+                percentage / 100;
+
+
+            const x =
+                center.x +
+                (mood.x - center.x)
+                * strength * 5;
+
+
+            const y =
+                center.y +
+                (mood.y - center.y)
+                * strength * 5;
+
+
+            return `${x},${y}`;
+
+        });
+
+
+    emotionShape.setAttribute(
+        "points",
+        shapePoints.join(" ")
+    );
+
+}
+
+
+
+/* =========================
+   DRAGGING
+========================= */
+
+
+function getSVGPosition(event) {
+
+    const svg =
+        document.querySelector("svg");
+
+
+    const rect =
+        svg.getBoundingClientRect();
+
+
+    return {
+
+        x:
+            (event.clientX - rect.left)
+            / rect.width * 600,
+
+        y:
+            (event.clientY - rect.top)
+            / rect.height * 600
+
+    };
+
+}
+
+
+
+function keepInside(x, y) {
+
+    const dx =
+        x - center.x;
+
+
+    const dy =
+        y - center.y;
+
+
+    const distance =
+        Math.sqrt(dx * dx + dy * dy);
+
+
+    const maxDistance =
+        250;
+
+
+    if (distance > maxDistance) {
+
+        const scale =
+            maxDistance / distance;
+
+
+        x =
+            center.x + dx * scale;
+
+
+        y =
+            center.y + dy * scale;
+
+    }
+
+
+    return {
+        x: x,
+        y: y
+    };
+
+}
+
+
+
+dot.addEventListener(
+    "pointerdown",
+    event => {
+
+        dragging = true;
+
+        dot.setPointerCapture(
+            event.pointerId
+        );
+
+    }
+);
+
+
+
+dot.addEventListener(
+    "pointermove",
+    event => {
+
+        if (!dragging) {
+            return;
+        }
+
+
+        const position =
+            getSVGPosition(event);
+
+
+        const inside =
+            keepInside(
+                position.x,
+                position.y
+            );
+
+
+        dotX =
+            inside.x;
+
+
+        dotY =
+            inside.y;
+
+
+        update();
+
+    }
+);
+
+
+
+dot.addEventListener(
+    "pointerup",
+    () => {
+
+        dragging = false;
+
+    }
+);
+
+
+
+/* =========================
+   RESET
+========================= */
+
+
+document
+    .getElementById("reset")
+    .addEventListener(
+        "click",
+        () => {
+
+            dotX = 300;
+
+            dotY = 300;
+
+            update();
+
+        }
+    );
+
+
+
+/* =========================
+   START
+========================= */
+
+
+update();
+
+
+/* =========================
+   SETTINGS SYSTEM
+========================= */
+
+const settingsButton =
+    document.getElementById("settingsButton");
+
+const settingsPanel =
+    document.getElementById("settingsPanel");
+
+const settingsClose =
+    document.getElementById("settingsClose");
+
+const languageSelect =
+    document.getElementById("languageSelect");
+
+const backgroundSelect =
+    document.getElementById("backgroundSelect");
+
+
+settingsButton.addEventListener(
+    "click",
+    () => {
+
+        settingsPanel.classList.toggle("open");
+
+    }
+);
+
+
+settingsClose.addEventListener(
+    "click",
+    () => {
+
+        settingsPanel.classList.remove("open");
+
+    }
+);
+
+
+/* Background */
+
+function applyBackground(theme) {
+
+    document.body.classList.remove(
+        "background-dark",
+        "background-light",
+        "background-rainbow"
+    );
+
+    if (theme === "dark") {
+
+        document.body.classList.add(
+            "background-dark"
+        );
+
+    }
+
+    if (theme === "light") {
+
+        document.body.classList.add(
+            "background-light"
+        );
+
+    }
+
+    if (theme === "rainbow") {
+
+        document.body.classList.add(
+            "background-rainbow"
+        );
+
+    }
+
+}
+
+
+backgroundSelect.addEventListener(
+    "change",
+    () => {
+
+        const value =
+            backgroundSelect.value;
+
+        localStorage.setItem(
+            "mpai-background",
+            value
+        );
+
+        applyBackground(value);
+
+    }
+);
+
+
+/* Language */
+
+
+/* Basic language system */
+
+
+/* Load saved settings */
+
+const savedBackground =
+    localStorage.getItem(
+        "mpai-background"
+    ) || "current";
+
+const savedLanguage =
+    localStorage.getItem(
+        "mpai-language"
+    ) || "en";
+
+
+backgroundSelect.value =
+    savedBackground;
+
+languageSelect.value =
+    savedLanguage;
+
+
+applyBackground(
+    savedBackground
+);
+
+applyLanguage(
+    savedLanguage
+);
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+<script id="clean-language-system">
+
+const appTranslations = {
+
+    en: {
+        title: "Emotional Music Map",
+        analysis: "Music Analysis",
+        mixture: "Emotional mixture",
+        primary: "Primary emotional state",
+        key: "Suggested key",
+        scale: "Suggested scale / mode",
+        tempo: "Suggested tempo",
+        chords: "Suggested chord progression",
+        melody: "Melody",
+        rhythm: "Rhythm",
+        dynamics: "Dynamics",
+        instrumentation: "Instrumentation / texture",
+        sound: "What it should sound like",
+        reset: "Reset",
+
+        settings: "Settings",
+        language: "Language",
+        background: "Background",
+        current: "Current",
+        dark: "Dark",
+        light: "Light",
+        rainbow: "🌈 Rainbow",
+        saved: "Your settings are saved automatically.",
+
+        wonder: "Wonder",
+        euphoria: "Euphoria",
+        anger: "Anger",
+        fear: "Fear",
+        melancholy: "Melancholy",
+        nostalgia: "Nostalgia",
+        calm: "Calm",
+        joy: "Joy"
+    },
+
+    fr: {
+        title: "Carte émotionnelle de la musique",
+        analysis: "Analyse musicale",
+        mixture: "Mélange émotionnel",
+        primary: "État émotionnel principal",
+        key: "Tonalité suggérée",
+        scale: "Gamme / mode suggéré",
+        tempo: "Tempo suggéré",
+        chords: "Progression d'accords suggérée",
+        melody: "Mélodie",
+        rhythm: "Rythme",
+        dynamics: "Dynamique",
+        instrumentation: "Instrumentation / texture",
+        sound: "Ce que cela devrait donner",
+        reset: "Réinitialiser",
+
+        settings: "Paramètres",
+        language: "Langue",
+        background: "Arrière-plan",
+        current: "Actuel",
+        dark: "Sombre",
+        light: "Gris clair",
+        rainbow: "🌈 Arc-en-ciel",
+        saved: "Vos paramètres sont enregistrés automatiquement.",
+
+        wonder: "Émerveillement",
+        euphoria: "Euphorie",
+        anger: "Colère",
+        fear: "Peur",
+        melancholy: "Mélancolie",
+        nostalgia: "Nostalgie",
+        calm: "Calme",
+        joy: "Joie"
+    },
+
+    es: {
+        title: "Mapa emocional de la música",
+        analysis: "Análisis musical",
+        mixture: "Mezcla emocional",
+        primary: "Estado emocional principal",
+        key: "Tonalidad sugerida",
+        scale: "Escala / modo sugerido",
+        tempo: "Tempo sugerido",
+        chords: "Progresión de acordes sugerida",
+        melody: "Melodía",
+        rhythm: "Ritmo",
+        dynamics: "Dinámica",
+        instrumentation: "Instrumentación / textura",
+        sound: "Cómo debería sonar",
+        reset: "Restablecer",
+
+        settings: "Configuración",
+        language: "Idioma",
+        background: "Fondo",
+        current: "Actual",
+        dark: "Oscuro",
+        light: "Gris claro",
+        rainbow: "🌈 Arcoíris",
+        saved: "La configuración se guarda automáticamente.",
+
+        wonder: "Asombro",
+        euphoria: "Euforia",
+        anger: "Ira",
+        fear: "Miedo",
+        melancholy: "Melancolía",
+        nostalgia: "Nostalgia",
+        calm: "Calma",
+        joy: "Alegría"
+    },
+
+    zh: {
+        title: "音乐心理地图",
+        analysis: "音乐分析",
+        mixture: "情绪混合",
+        primary: "主要情绪状态",
+        key: "建议调性",
+        scale: "建议音阶 / 调式",
+        tempo: "建议速度",
+        chords: "建议和弦进行",
+        melody: "旋律",
+        rhythm: "节奏",
+        dynamics: "力度变化",
+        instrumentation: "乐器配置 / 音色层次",
+        sound: "整体听感",
+        reset: "重置",
+
+        settings: "设置",
+        language: "语言",
+        background: "背景",
+        current: "当前",
+        dark: "深色",
+        light: "浅灰色",
+        rainbow: "🌈 彩虹",
+        saved: "您的设置会自动保存。",
+
+        wonder: "惊奇",
+        euphoria: "欣快",
+        anger: "愤怒",
+        fear: "恐惧",
+        melancholy: "忧郁",
+        nostalgia: "怀旧",
+        calm: "平静",
+        joy: "喜悦"
+    }
+
+};
+
+
+function applyAppLanguage(language) {
+
+    const dictionary =
+        appTranslations[language] ||
+        appTranslations.en;
+
+
+    document
+        .querySelectorAll("[data-lang]")
+        .forEach(function(element) {
+
+            const key =
+                element.getAttribute("data-lang");
+
+            if (dictionary[key]) {
+                element.textContent =
+                    dictionary[key];
+            }
+
+        });
+
+
+    const settingsTitle =
+        document.querySelector(
+            ".settings-header h2"
+        );
+
+    if (settingsTitle) {
+        settingsTitle.textContent =
+            dictionary.settings;
+    }
+
+
+    const languageLabel =
+        document.querySelector(
+            'label[for="languageSelect"]'
+        );
+
+    if (languageLabel) {
+        languageLabel.textContent =
+            dictionary.language;
+    }
+
+
+    const backgroundLabel =
+        document.querySelector(
+            'label[for="backgroundSelect"]'
+        );
+
+    if (backgroundLabel) {
+        backgroundLabel.textContent =
+            dictionary.background;
+    }
+
+
+    const backgroundSelect =
+        document.getElementById(
+            "backgroundSelect"
+        );
+
+    if (backgroundSelect) {
+
+        if (backgroundSelect.options[0])
+            backgroundSelect.options[0].textContent =
+                dictionary.current;
+
+        if (backgroundSelect.options[1])
+            backgroundSelect.options[1].textContent =
+                dictionary.dark;
+
+        if (backgroundSelect.options[2])
+            backgroundSelect.options[2].textContent =
+                dictionary.light;
+
+        if (backgroundSelect.options[3])
+            backgroundSelect.options[3].textContent =
+                dictionary.rainbow;
+
+    }
+
+
+    const description =
+        document.querySelector(
+            ".settings-description"
+        );
+
+    if (description) {
+        description.textContent =
+            dictionary.saved;
+    }
+
+
+    document.title =
+        language === "fr"
+            ? "Musique et Psychologie IA"
+            : language === "es"
+                ? "Música y Psicología IA"
+                : language === "zh"
+                    ? "音乐心理 AI"
+                    : "Music Psychology AI";
+
+
+    localStorage.setItem(
+        "mpai-language",
+        language
+    );
+
+}
+
+
+/* Language selector */
+
+const cleanLanguageSelect =
+    document.getElementById(
+        "languageSelect"
+    );
+
+
+if (cleanLanguageSelect) {
+
+    const savedLanguage =
+        localStorage.getItem(
+            "mpai-language"
+        ) || "en";
+
+
+    cleanLanguageSelect.value =
+        savedLanguage;
+
+
+    cleanLanguageSelect.addEventListener(
+        "change",
+        function() {
+
+            applyAppLanguage(
+                this.value
+            );
+
+        }
+    );
+
+
+    applyAppLanguage(
+        savedLanguage
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>
+<script src="ai-chat.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+app/backups/
+app-before-organization/
+*.log
+main.backup-*.js
+preload.backup-*.js
