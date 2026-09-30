@@ -98,7 +98,7 @@ Windows is currently the primary supported platform.
 You will need:
 
 - [Node.js](https://nodejs.org/en/download/)
-- npm
+- [npm](https://www.npmjs.com/)
 - [Ollama](https://ollama.com/download/windows)
 - [Llama 3.2](https://ollama.com/library/llama3.2)
 
@@ -297,5 +297,7 @@ Features under the roadmap are planned future development and should not be cons
 ## License
 
 License information has not yet been finalized.
+
+
 
 
