@@ -5,3 +5,5 @@ app-before-organization/
 *.log
 main.backup-*.js
 preload.backup-*.js
+
+music/*.mid
