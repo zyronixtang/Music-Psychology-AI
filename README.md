@@ -97,12 +97,11 @@ Windows is currently the primary supported platform.
 
 You will need:
 
-- Node.js
+- [Node.js](https://nodejs.org/en/download/)
 - npm
-- Ollama
-- Llama 3.2
+- [Ollama](https://ollama.com/download/windows)
+- [Llama 3.2](https://ollama.com/library/llama3.2)
 
-The project currently uses Electron for the desktop application.
 
 ## Installation
 
@@ -299,11 +298,4 @@ Features under the roadmap are planned future development and should not be cons
 
 License information has not yet been finalized.
 
-
-## Official Downloads
-
-- [Node.js](https://nodejs.org/en/download/) — LTS version recommended
-- [Git for Windows](https://git-scm.com/install/windows)
-- [Ollama for Windows](https://ollama.com/download/windows)
-- [Llama 3.2 on Ollama](https://ollama.com/library/llama3.2)
 
